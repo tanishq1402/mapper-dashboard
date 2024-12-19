@@ -1,0 +1,18 @@
+Parameter,Value,Unit
+Panel Angle,53,deg
+Mode,Velocity Phasing,-
+Mean Sun Angle -Z v,73.8,deg
+Std Dev Angle -Z v,29.1,deg
+Mean Sun Angle -Y v,92.72,deg
+Std Dev Angle -Y v,41.08,deg
+Mean Sun Angle -X v,90,deg
+Std Dev Angle -X v,41.85,deg
+Mean Sun Angle +Y v,87.3,deg
+Std Dev Angle +Y v,41.08,deg
+Mode,Sun Phasing,-
+Mean Sun Angle 60/-Z s,27.16,deg
+Std Dev Angle 60/-Z s,17.34,deg
+Mean Sun Angle -Y s,26.97,deg
+Std Dev Angle -Y s,19.54,deg
+Mean Sun Angle -X s,26.97,deg
+Std Dev Angle -X s,19.54,deg

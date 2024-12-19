@@ -5,147 +5,162 @@ from pathlib import Path
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
+    page_title='MAPPER',
+    page_icon='🛰️', # This is an emoji shortcode. Could be a URL too.
 )
 
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
 
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
+st.title("MAPPER – Mass And Power Parameters Estimation Resource 🛰️")
+st.markdown("""
+Welcome to **MAPPER**, your go-to tool for automating spacecraft and payload budgeting! 🛰️
 
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
+This app allows you to:
+- Extract and analyze system parameters like **cost**, **mass**, and **power**.
+- Streamline your budgeting and planning processes with ease.
 
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
+### Let's make your next mission a success!
+""")
+file_path = '/workspaces/mapper-dashboard/data/pif_data.csv'  # Replace with the actual path to your CSV file
 
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
+try:
+    data = pd.read_csv(file_path)
+except FileNotFoundError:
+    st.error(f"File not found: {file_path}")
+    st.stop()
 
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
+# Ensure the CSV has the expected structure
+if 'Parameter' not in data.columns or 'Value' not in data.columns:
+    st.error("The CSV file must contain 'Parameter' and 'Value' columns.")
+    st.stop()
 
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
+# Extract payload information
+payload_data = {
+    "Payload Type": [],
+    "Mass (kg)": [],
+    "X (mm)": [],
+    "Y (mm)": [],
+    "Z (mm)": [],
+    "FOV (°)": []
+}
 
-    return gdp_df
+for i in range(1, 5):  # Loop through Payload 1 to Payload 4
+    try:
+        payload_data["Payload Type"].append(data.loc[data['Parameter'] == f'Payload {i} Type', 'Value'].values[0])
+        payload_data["Mass (kg)"].append(int(data.loc[data['Parameter'] == f'Payload {i} Mass', 'Value'].values[0]))
+        payload_data["X (mm)"].append(int(data.loc[data['Parameter'] == f'Payload {i} X', 'Value'].values[0]))
+        payload_data["Y (mm)"].append(int(data.loc[data['Parameter'] == f'Payload {i} Y', 'Value'].values[0]))
+        payload_data["Z (mm)"].append(int(data.loc[data['Parameter'] == f'Payload {i} Z', 'Value'].values[0]))
+        payload_data["FOV (°)"].append(int(data.loc[data['Parameter'] == f'Payload {i} FOV', 'Value'].values[0]))
+    except IndexError:
+        st.warning(f"Data for Payload {i} is missing in the CSV file.")
+        payload_data["Payload Type"].append("N/A")
+        payload_data["Mass (kg)"].append(0)
+        payload_data["X (mm)"].append(0)
+        payload_data["Y (mm)"].append(0)
+        payload_data["Z (mm)"].append(0)
+        payload_data["FOV (°)"].append(0)
 
-gdp_df = get_gdp_data()
 
-# -----------------------------------------------------------------------------
-# Draw the actual page
+payload_df = pd.DataFrame(payload_data);
 
-# Set the title that appears at the top of the page.
-'''
-# :earth_americas: GDP dashboard
 
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
-'''
-
-# Add some spacing
-''
-''
-
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
-
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
-
-countries = gdp_df['Country Code'].unique()
-
-if not len(countries):
-    st.warning("Select at least one country")
-
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
-
-''
-''
-''
-
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
+# Extract miscellaneous information
+misc_parameters = [
+    ("Mission Name", ""),
+    ("Mission Type", ""),
+    ("Mission Duration", "years"),
+    ("Number of Ops Modes", ""),
+    ("Input Voltage", "V"),
+    ("Current", "A"),
+    ("TMTC Interface", ""),
+    ("Payload Database", ""),
+    ("Mounting Points", ""),
+    ("Fastener Type", ""),
+    ("Data Dumping per Day", "MB"),
+    ("Max Data Latency Hours", "hours"),
+    ("Pointing Accuracy 3 sigma", "°"),
+    ("Pointing Knowledge 3 sigma", "°"),
+    ("Pointing Stability", "°/s"),
+    ("Max Off Nadir Angle", "°"),
+    ("Acceptable Temperature Min", "°C"),
+    ("Acceptable Temperature Max", "°C"),
+    ("Orbit Altitude", "km"),
+    ("Orbit Inclination", "°"),
+    ("LTAN (if SSO)", "hh:mm")
 ]
 
-st.header('GDP over time', divider='gray')
+# Generate list content
+misc_list = []
+for param, unit in misc_parameters:
+    try:
+        value = data.loc[data['Parameter'] == param, 'Value'].values[0]
+        misc_list.append(f"**{param}:** {value} {unit}".strip())
+    except IndexError:
+        misc_list.append(f"**{param}:** N/A")
 
-''
+# Split the list into two equal parts
+split_index = len(misc_list) // 2
+column1, column2 = misc_list[:split_index+1], misc_list[split_index+1:]
 
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
+# Display tables and lists in Streamlit
+st.title("Payload and Mission Information")
+
+st.subheader("Payload Information")
+st.markdown(
+    """
+    This section presents the key payload and mission parameters and constraints derived obtained from the customer and payload intake form.
+    """
 )
+st.dataframe(payload_df)
 
-''
-''
+st.subheader("Mission and Miscellaneous Information")
+col1, col2 = st.columns(2)
 
+with col1:
+    st.write("\n".join([f"- {item}" for item in column1]))
 
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
+with col2:
+    st.write("\n".join([f"- {item}" for item in column2]))
 
-st.header(f'GDP in {to_year}', divider='gray')
+# Mission Design and Analysis Output
+st.subheader("Mission Design and Analysis Output")
+st.markdown(
+    """
+    This section presents the outputs of the Mission Design and Analysis simulations conducted on STK. 
+    These results are derived based on the payload requirements, orbit parameters, 
+    and system constraints provided in the intake form.
+    """
+)
+mda_path = '/workspaces/mapper-dashboard/data/mda_data.csv'
+chemical_thrust_path = '/workspaces/mapper-dashboard/data/chemical_thrust_data.csv'
+electric_thrust_path = '/workspaces/mapper-dashboard/data/electric_thrust_data.csv'
+initial_sun_panel_angle_path = '/workspaces/mapper-dashboard/data/initial_sun_panel_angle_data.csv'
+final_sun_panel_angle_path = '/workspaces/mapper-dashboard/data/final_sun_panel_angle_data.csv'
 
-''
+# Load CSV data into DataFrames
+try:
+    mda_df = pd.read_csv(mda_path)
+    chemical_thrust_df = pd.read_csv(chemical_thrust_path)
+    electric_thrust_df = pd.read_csv(electric_thrust_path)
+    initial_sun_panel_angle_df = pd.read_csv(initial_sun_panel_angle_path)
+    final_sun_panel_angle_df = pd.read_csv(final_sun_panel_angle_path)
+except Exception as e:
+    st.error(f"Error loading data: {e}")
+    st.stop()
 
-cols = st.columns(4)
+st.subheader("Mission Data")
+st.dataframe(mda_df)
 
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
+st.subheader("Chemical Thrust Data")
+st.dataframe(chemical_thrust_df)
 
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
+st.subheader("Electric Thrust Data")
+st.dataframe(electric_thrust_df)
 
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
+st.subheader("Initial Sun Panel Angle Data")
+st.dataframe(initial_sun_panel_angle_df)
 
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+st.subheader("Final Sun Panel Angle Data")
+st.dataframe(final_sun_panel_angle_df)

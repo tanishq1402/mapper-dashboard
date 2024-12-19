@@ -1,0 +1,46 @@
+Parameter,Value
+Mission Name,XONA
+Mission Type,Hyperspectral EO
+Mission Duration,5
+Payload 1 Type,Hyperspectral SWIR
+Payload 1 Mass,50
+Payload 1 X,400
+Payload 1 Y,500
+Payload 1 Z,400
+Payload 1 FOV,45
+Payload 2 Type,Hyperspectral MWIR
+Payload 2 Mass,80
+Payload 2 X,700
+Payload 2 Y,600
+Payload 2 Z,450
+Payload 2 FOV,30
+Payload 3 Type,Hyperspectral VNIR
+Payload 3 Mass,45
+Payload 3 X,300
+Payload 3 Y,250
+Payload 3 Z,250
+Payload 3 FOV,60
+Payload 4 Type,N/A
+Payload 4 Mass,0
+Payload 4 X,0
+Payload 4 Y,0
+Payload 4 Z,0
+Payload 4 FOV,0
+Number of Ops Modes,7
+Input Voltage,36
+Current,5
+TMTC Interface,Ethernet
+Payload Database,Space Wire
+Mounting Points,5
+Fastener Type,M5
+Data Dumping per Day,1024
+Max Data Latency Hours,5
+Pointing Accuracy 3 sigma,0.5
+Pointing Knowledge 3 sigma,1
+Pointing Stability,1
+Max Off Nadir Angle,30
+Acceptable Temperature Min,-40
+Acceptable Temperature Max,80
+Orbit Altitude,1080
+Orbit Inclination,53
+LTAN (if SSO),9:30

@@ -1,0 +1,20 @@
+Parameter,Value,Units
+Initial Altitude,500,km
+Initial Inclination,45,deg
+Final Altitude,1080,km
+Final Inclination,53,deg
+Orbit Time,106.68,min
+Average Sunlit Time,75,min
+Average Eclipse Time,32,min
+Beta cyle duration,80,days
+Delta-V (orbit raising),303,m/s
+Total Impulse,60470,N-s
+Delta-V (insertion),781,m/s
+Delta-V (deorbit),303,m/s
+Delta-V (total),1084,m/s
+Max duty cycle,17.76%,-
+Min duty cycle,14.50%,-
+Average duty cycle,10.02%,-
+Std dev duty cycle,4.10%,-
+Initial RAAN Rate,-5.41,°/day
+Final RAAN Rate,-4.075,°/day

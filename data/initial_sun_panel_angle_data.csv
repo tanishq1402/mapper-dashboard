@@ -1,0 +1,10 @@
+Parameter,Value,Unit
+Panel angle,45,deg
+Panel axis,60,deg / - Z
+Average sun angle,26.82,deg
+Std dev angle,17.25,deg
+Max sun angle,61.20,deg
+Mean Cosine,0.854,
+Std Dev Cosine,0.146,
+Min Cosine,0.480,
+Min Interval Cosine,0.810,
