@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import math
 from pathlib import Path
+from st_aggrid import AgGrid
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
@@ -113,8 +114,16 @@ st.markdown(
     This section presents the key payload and mission parameters and constraints derived obtained from the customer and payload intake form.
     """
 )
-st.dataframe(payload_df)
-
+def set_column_widths(df):
+    return df.style.set_properties(
+        **{
+            "max-width": "150px",  # Adjust width
+            "overflow": "hidden",
+            "text-overflow": "ellipsis",
+            "white-space": "nowrap"
+        }
+    )
+st.dataframe(set_column_widths(payload_df), use_container_width=True)
 st.subheader("Mission and Miscellaneous Information")
 col1, col2 = st.columns(2)
 
@@ -151,16 +160,17 @@ except Exception as e:
     st.stop()
 
 st.subheader("Mission Data")
-st.dataframe(mda_df)
+st.dataframe(set_column_widths(mda_df), use_container_width=True)
 
 st.subheader("Chemical Thrust Data")
-st.dataframe(chemical_thrust_df)
+st.dataframe(set_column_widths(chemical_thrust_df), use_container_width=True)
 
 st.subheader("Electric Thrust Data")
-st.dataframe(electric_thrust_df)
+st.dataframe(set_column_widths(electric_thrust_df), use_container_width=True)
 
 st.subheader("Initial Sun Panel Angle Data")
-st.dataframe(initial_sun_panel_angle_df)
+st.dataframe(set_column_widths(initial_sun_panel_angle_df), use_container_width=True)
 
 st.subheader("Final Sun Panel Angle Data")
-st.dataframe(final_sun_panel_angle_df)
+st.dataframe(set_column_widths(final_sun_panel_angle_df), use_container_width=True)
+
